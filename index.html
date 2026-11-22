@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Te invitamos a nuestro Acto! - Sala de 4 "B"</title>
+    
+    <!-- Etiquetas Open Graph para WhatsApp -->
+    <meta property="og:title" content="¡Estás invitado! - Acto de Nivel Inicial">
+    <meta property="og:description" content="Tocá el enlace para abrir tu invitación interactiva.">
+    <meta property="og:type" content="website">
+
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --crema: #fffaf3;
+            --coral: #f28482;
+            --coral-oscuro: #e06d6b;
+            --salvia: #84a59d;
+            --dorado: #f6bd60;
+            --texto: #4a4e69;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--crema);
+            color: var(--texto);
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .fuente-titulo {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* 1. OVERLAY DE BIENVENIDA */
+        #overlay-bienvenida {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #f6bd60 0%, #f28482 100%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        #overlay-bienvenida.oculto {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .icono-sobre {
+            font-size: 5.5rem;
+            color: #fff;
+            animation: flotar 2.5s ease-in-out infinite;
+        }
+
+        @keyframes flotar {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .btn-ingresar {
+            background-color: #fff;
+            color: var(--coral-oscuro);
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.25rem;
+            padding: 14px 34px;
+            border-radius: 50px;
+            border: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
+
+        .btn-ingresar:hover {
+            transform: scale(1.05);
+        }
+
+        /* BOTÓN FLOTANTE DE MÚSICA */
+        #btn-musica {
+            position: fixed;
+            bottom: 22px;
+            right: 22px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background-color: var(--coral);
+            color: white;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1050;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 2. PORTADA HERO */
+        .hero-section {
+            background: linear-gradient(180deg, #fceee9 0%, #fffaf3 100%);
+            padding-top: 4rem;
+            position: relative;
+        }
+
+        .badge-familia {
+            background-color: var(--salvia);
+            color: white;
+            font-size: 1rem;
+            padding: 8px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 10px rgba(132, 165, 157, 0.3);
+        }
+
+        .wave-divider svg {
+            display: block;
+            width: 100%;
+            height: 60px;
+        }
+
+        /* 3. CUENTA REGRESIVA */
+        .seccion-contador {
+            background-color: var(--salvia);
+            color: white;
+            padding: 3rem 1rem;
+        }
+
+        .caja-tiempo {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 18px;
+            padding: 15px 10px;
+            min-width: 72px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .caja-tiempo span {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            display: block;
+            line-height: 1.1;
+        }
+
+        /* 4. TARJETAS CUÁNDO Y DÓNDE */
+        .card-evento {
+            border: none;
+            border-radius: 24px;
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(74, 78, 105, 0.07);
+            transition: transform 0.3s ease;
+        }
+
+        .card-evento:hover {
+            transform: translateY(-5px);
+        }
+
+        .circulo-icono {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+        }
+
+        /* 5. GALERÍA DE MOMENTOS */
+        .card-momento {
+            border-radius: 20px;
+            border: 2px dashed var(--dorado);
+            background-color: #fff;
+            padding: 1.5rem;
+            text-align: center;
+            height: 100%;
+        }
+
+        /* BOTONES PERSONALIZADOS */
+        .btn-coral {
+            background-color: var(--coral);
+            color: white;
+            border-radius: 50px;
+            padding: 12px 28px;
+            font-weight: 700;
+            border: none;
+        }
+
+        .btn-coral:hover {
+            background-color: var(--coral-oscuro);
+            color: white;
+        }
+
+        .btn-salvia {
+            background-color: var(--salvia);
+            color: white;
+            border-radius: 50px;
+            padding: 12px 28px;
+            font-weight: 700;
+            border: none;
+        }
+
+        .btn-salvia:hover {
+            background-color: #6f9189;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PANTALLA DE BIENVENIDA (Desbloquea el audio) -->
+    <div id="overlay-bienvenida">
+        <i class="bi bi-envelope-heart-fill icono-sobre mb-3"></i>
+        <h1 class="text-white display-5 fw-bold mb-2">¡Tenemos una invitación!</h1>
+        <p class="text-white fs-5 mb-4" id="saludo-overlay">Para una familia muy especial</p>
+        <button id="btn-entrar" class="btn-ingresar">
+            <i class="bi bi-music-note-beamed me-2"></i>Ingresar con música
+        </button>
+    </div>
+
+    <!-- BOTÓN FLOTANTE DE MÚSICA -->
+    <button id="btn-musica" title="Activar/Silenciar música">
+        <i id="icono-musica" class="bi bi-volume-up-fill"></i>
+    </button>
+
+    <!-- PORTADA HERO -->
+    <header class="hero-section text-center">
+        <div class="container pb-4">
+            <div class="badge-familia fw-bold" id="nombre-familia-portada">
+                <i class="bi bi-stars me-1"></i> Querida Familia
+            </div>
+            <p class="text-uppercase fw-bold text-muted mb-1" style="letter-spacing: 2px;">JINZ Nº 39</p>
+            <h1 class="display-4 fw-bold mb-3" style="color: var(--coral-oscuro);">Velada de Fin de Año</h1>
+            <h3 class="h4 mb-4" style="color: var(--salvia);">Sedes Esc. Corrientes, Esc. J.P. Cortinez y F. de Villagra</h3>
+            <p class="lead mx-auto" style="max-width: 550px;">
+                Compartimos un año lleno de juegos, risas, canciones y aprendizajes. ¡Queremos celebrar este cierre junto a ustedes!
+            </p>
+        </div>
+        <!-- Separador ondulado -->
+        <div class="wave-divider">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                <path fill="#84a59d" d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"></path>
+            </svg>
+        </div>
+    </header>
+
+    <!-- CUENTA REGRESIVA -->
+    <section class="seccion-contador text-center">
+        <div class="container">
+            <h2 class="mb-4 fw-bold">¡Falta muy poquito para vernos!</h2>
+            <div class="d-flex justify-content-center gap-2 gap-md-3" id="contador">
+                <div class="caja-tiempo">
+                    <span id="dias">00</span>
+                    <small>Días</small>
+                </div>
+                <div class="caja-tiempo">
+                    <span id="horas">00</span>
+                    <small>Horas</small>
+                </div>
+                <div class="caja-tiempo">
+                    <span id="minutos">00</span>
+                    <small>Min</small>
+                </div>
+                <div class="caja-tiempo">
+                    <span id="segundos">00</span>
+                    <small>Seg</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CUÁNDO Y DÓNDE -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-4 justify-content-center">
+                <!-- Cuándo -->
+                <div class="col-md-5">
+                    <div class="card card-evento p-4 text-center h-100">
+                        <div class="circulo-icono" style="background-color: #fceee9; color: var(--coral);">
+                            <i class="bi bi-calendar-heart"></i>
+                        </div>
+                        <h3 class="fw-bold mb-2">¿Cuándo?</h3>
+                        <p class="fs-5 fw-bold mb-1">Viernes 11 de Diciembre</p>
+                        <p class="text-muted mb-4">10:00 hs. (Puntual)</p>
+                        <a id="btn-calendar" href="#" target="_blank" class="btn btn-coral mt-auto">
+                            <i class="bi bi-calendar-plus me-2"></i>Agendar fecha
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dónde -->
+                <div class="col-md-5">
+                    <div class="card card-evento p-4 text-center h-100">
+                        <div class="circulo-icono" style="background-color: #eaf2f0; color: var(--salvia);">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <h3 class="fw-bold mb-2">¿Dónde?</h3>
+                        <p class="fs-5 fw-bold mb-1">Club Deportivo Unión Estudiantil</p>
+                        <p class="text-muted mb-4">Santa Lucía, San Juan</p>
+                        <a href="https://maps.app.goo.gl/YFJCZ2hp5EMQ35s36" target="_blank" class="btn btn-salvia mt-auto">
+                            <i class="bi bi-map me-2"></i>Cómo llegar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NUESTRO AÑO EN LA SALA -->
+    <section class="py-5 bg-white">
+        <div class="container text-center">
+            <h2 class="fw-bold mb-2" style="color: var(--coral-oscuro);">Un año inolvidable</h2>
+            <p class="text-muted mb-4">Este año compartimos momento como...</p>
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <div class="card-momento">
+                        <i class="bi bi-palette-fill fs-1 text-warning mb-2"></i>
+                        <h5 class="fuente-titulo">Pequeños Artistas</h5>
+                        <p class="small text-muted mb-0">Explorando colores, texturas y mucha imaginación.</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card-momento">
+                        <i class="bi bi-book-half fs-1 text-info mb-2"></i>
+                        <h5 class="fuente-titulo">Cuentos Mágicos</h5>
+                        <p class="small text-muted mb-0">Viajando juntos a través de cada historia.</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card-momento">
+                        <i class="bi bi-music-note-list fs-1 text-danger mb-2"></i>
+                        <h5 class="fuente-titulo">Rondas y Canciones</h5>
+                        <p class="small text-muted mb-0">Bailando y cantando con alegría todos los días.</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card-momento">
+                        <i class="bi bi-people-fill fs-1 text-success mb-2"></i>
+                        <h5 class="fuente-titulo">Grandes Amigos</h5>
+                        <p class="small text-muted mb-0">Aprendiendo a compartir y cuidarnos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NOTAS ÚTILES / DRESS CODE -->
+    <section class="py-5">
+        <div class="container" style="max-width: 700px;">
+            <h2 class="text-center fw-bold mb-4">Datos importantes</h2>
+            <div class="accordion" id="acordeonNotas">
+                <div class="accordion-item border-0 mb-3 rounded-4 shadow-sm overflow-hidden">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#nota1">
+                            <i class="bi bi-stars text-warning me-2 fs-5"></i> Vestimenta de los peques
+                        </button>
+                    </h2>
+                    <div id="nota1" class="accordion-collapse collapse show" data-bs-parent="#acordeonNotas">
+                        <div class="accordion-body">
+                            Los chicos deben venir con el vestuario asignado bien prolijo y calzado cómodo para bailar.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item border-0 mb-3 rounded-4 shadow-sm overflow-hidden">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#nota2">
+                            <i class="bi bi-clock-history text-danger me-2 fs-5"></i> Puntualidad
+                        </button>
+                    </h2>
+                    <div id="nota2" class="accordion-collapse collapse" data-bs-parent="#acordeonNotas">
+                        <div class="accordion-body">
+                            Les pedimos estar 15 minutos antes para organizar a los nenes en la sala con tranquilidad antes de empezar.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item border-0 rounded-4 shadow-sm overflow-hidden">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#nota3">
+                            <i class="bi bi-camera-fill text-success me-2 fs-5"></i> Fotos y Videos
+                        </button>
+                    </h2>
+                    <div id="nota3" class="accordion-collapse collapse" data-bs-parent="#acordeonNotas">
+                        <div class="accordion-body">
+                            ¡Traigan sus celulares con batería! Vamos a tener un rincón especial decorado para sacarse fotos en familia al finalizar.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONFIRMACIÓN DE ASISTENCIA -->
+    <section class="py-5 text-center" style="background-color: #fceee9;">
+        <div class="container">
+            <h2 class="fw-bold mb-2">¿Nos acompañan?</h2>
+            <p class="mb-4">Por favor confirmen su asistencia para organizar los lugares.</p>
+            <button class="btn btn-coral btn-lg shadow" data-bs-toggle="modal" data-bs-target="#modalRSVP">
+                <i class="bi bi-check2-circle me-2"></i>Confirmar Asistencia
+            </button>
+            <div id="alerta-confirmado" class="alert alert-success mt-4 mx-auto d-none" style="max-width: 450px;">
+                <i class="bi bi-heart-fill me-2"></i>¡Gracias por confirmar! Los esperamos.
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-4 text-center text-muted small">
+        <p class="mb-0">Con mucho cariño, JINZ Nº 39  • Nivel Inicial 2026</p>
+    </footer>
+
+    <!-- MODAL DE CONFIRMACIÓN (RSVP) -->
+    <div class="modal fade" id="modalRSVP" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fuente-titulo fs-4">Confirmar Asistencia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-rsvp">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Familia / Alumno</label>
+                            <input type="text" id="input-familia" class="form-control rounded-3" required placeholder="Ej: Familia Pérez - Mateo">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">¿Asisten al acto?</label>
+                            <select id="select-asiste" class="form-select rounded-3">
+                                <option value="Sí, ¡ahí estaremos!">Sí, ¡ahí estaremos!</option>
+                                <option value="Lamentablemente no podemos asistir">No podremos asistir</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Cantidad de familiares adultos</label>
+                            <input type="number" id="input-cantidad" class="form-control rounded-3" value="2" min="1" max="10">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mensaje opcional para la sala</label>
+                            <textarea id="input-mensaje" class="form-control rounded-3" rows="2" placeholder="¡Qué lindo año compartimos!"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 rounded-pill py-2 fw-bold">
+                            <i class="bi bi-whatsapp me-2"></i>Enviar confirmación por WhatsApp
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- CONFIGURACIÓN ---
+            const fechaEvento = new Date('2026-12-11T10:00:00').getTime();
+            const telefonoWhatsApp = '5492640000000'; // CAMBIAR POR TU NÚMERO REAL
+
+            // 1. PERSONALIZACIÓN POR URL (?familia=Familia%20Varas)
+            const params = new URLSearchParams(window.location.search);
+            const familiaParam = params.get('familia');
+            if (familiaParam) {
+                document.getElementById('saludo-overlay').textContent = `Para: ${familiaParam}`;
+                document.getElementById('nombre-familia-portada').innerHTML = `<i class="bi bi-stars me-1"></i> ${familiaParam}`;
+                document.getElementById('input-familia').value = familiaParam;
+            }
+
+            // 2. MELODÍA SUAVE CON WEB AUDIO API (Sin archivos mp3 externos)
+            let audioCtx = null;
+            let intervalMusica = null;
+            let musicaActiva = false;
+
+            const notas = [261.63, 293.66, 329.63, 392.00, 329.63, 293.66, 261.63, 329.63, 392.00, 440.00, 392.00, 329.63]; // Escala pentatónica alegre
+            let indiceNota = 0;
+
+            function tocarNota() {
+                if (!audioCtx) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(notas[indiceNota % notas.length], audioCtx.currentTime);
+                
+                gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.55);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.55);
+                indiceNota++;
+            }
+
+            function iniciarMusica() {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                if (!musicaActiva) {
+                    musicaActiva = true;
+                    tocarNota();
+                    intervalMusica = setInterval(tocarNota, 600);
+                    document.getElementById('icono-musica').className = 'bi bi-volume-up-fill';
+                }
+            }
+
+            function pausarMusica() {
+                musicaActiva = false;
+                clearInterval(intervalMusica);
+                document.getElementById('icono-musica').className = 'bi bi-volume-mute-fill';
+            }
+
+            document.getElementById('btn-entrar').addEventListener('click', () => {
+                document.getElementById('overlay-bienvenida').classList.add('oculto');
+                iniciarMusica();
+            });
+
+            document.getElementById('btn-musica').addEventListener('click', () => {
+                if (musicaActiva) {
+                    pausarMusica();
+                } else {
+                    iniciarMusica();
+                }
+            });
+
+            // 3. GOOGLE CALENDAR
+            const tituloCal = encodeURIComponent('Velada Fin de Año - JINZ Nº 39');
+            const descCal = encodeURIComponent('Velada JINZ Nº39 - Nivel Inicial.');
+            const lugarCal = encodeURIComponent('Club Deportivo Unión Estudiantil San Juan');
+            const fechasCal = '20261211T130000Z/20261211T150000Z';
+            document.getElementById('btn-calendar').href = 
+                `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${tituloCal}&dates=${fechasCal}&details=${descCal}&location=${lugarCal}`;
+
+            // 4. CUENTA REGRESIVA
+            function actualizarContador() {
+                const ahora = new Date().getTime();
+                const diff = fechaEvento - ahora;
+
+                if (diff <= 0) {
+                    document.getElementById('contador').innerHTML = '<h4 class="fw-bold">¡Llegó el gran día!</h4>';
+                    return;
+                }
+
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('dias').textContent = String(d).padStart(2, '0');
+                document.getElementById('horas').textContent = String(h).padStart(2, '0');
+                document.getElementById('minutos').textContent = String(m).padStart(2, '0');
+                document.getElementById('segundos').textContent = String(s).padStart(2, '0');
+            }
+            setInterval(actualizarContador, 1000);
+            actualizarContador();
+
+            // 5. FORMULARIO RSVP A WHATSAPP
+            document.getElementById('form-rsvp').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const familia = document.getElementById('input-familia').value;
+                const asiste = document.getElementById('select-asiste').value;
+                const cantidad = document.getElementById('input-cantidad').value;
+                const mensaje = document.getElementById('input-mensaje').value;
+
+                let texto = `*Confirmación Velada JINZ Nº39*\n`;
+                texto += `• *Familia:* ${familia}\n`;
+                texto += `• *Asistencia:* ${asiste}\n`;
+                if (asiste.startsWith('Sí')) {
+                    texto += `• *Adultos:* ${cantidad}\n`;
+                }
+                if (mensaje.trim() !== '') {
+                    texto += `• *Mensaje:* ${mensaje}`;
+                }
+
+                const urlWa = `https://wa.me/${telefonoWhatsApp}?text=${encodeURIComponent(texto)}`;
+                
+                // Cerrar modal y mostrar confirmación
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalRSVP'));
+                modal.hide();
+                document.getElementById('alerta-confirmado').classList.remove('d-none');
+                
+                window.open(urlWa, '_blank');
+            });
+        });
+    </script>
+</body>
+</html>
