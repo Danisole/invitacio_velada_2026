@@ -490,64 +490,41 @@
                 document.getElementById('input-familia').value = familiaParam;
             }
 
-            // 2. MELODÍA SUAVE CON WEB AUDIO API (Sin archivos mp3 externos)
-            let audioCtx = null;
-            let intervalMusica = null;
-            let musicaActiva = false;
+           // 2. MÚSICA DE FONDO CON ARCHIVO MP3 LOCAL
+                const audioFondo = new Audio('fin-de-ano.mp3');
+                audioFondo.loop = true;
+                audioFondo.volume = 0.6;
+                let musicaActiva = false;
 
-            const notas = [261.63, 293.66, 329.63, 392.00, 329.63, 293.66, 261.63, 329.63, 392.00, 440.00, 392.00, 329.63]; // Escala pentatónica alegre
-            let indiceNota = 0;
-
-            function tocarNota() {
-                if (!audioCtx) return;
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(notas[indiceNota % notas.length], audioCtx.currentTime);
-                
-                gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.55);
-
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.55);
-                indiceNota++;
-            }
-
-            function iniciarMusica() {
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                function iniciarMusica() {
+                    audioFondo.play().then(() => {
+                        musicaActiva = true;
+                        const icono = document.getElementById('icono-musica');
+                        if (icono) icono.className = 'bi bi-volume-up-fill';
+                    }).catch((err) => {
+                        console.warn('No se pudo iniciar el audio:', err);
+                    });
                 }
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
+
+                function pausarMusica() {
+                    audioFondo.pause();
+                    musicaActiva = false;
+                    const icono = document.getElementById('icono-musica');
+                    if (icono) icono.className = 'bi bi-volume-mute-fill';
                 }
-                if (!musicaActiva) {
-                    musicaActiva = true;
-                    tocarNota();
-                    intervalMusica = setInterval(tocarNota, 600);
-                    document.getElementById('icono-musica').className = 'bi bi-volume-up-fill';
-                }
-            }
 
-            function pausarMusica() {
-                musicaActiva = false;
-                clearInterval(intervalMusica);
-                document.getElementById('icono-musica').className = 'bi bi-volume-mute-fill';
-            }
-
-            document.getElementById('btn-entrar').addEventListener('click', () => {
-                document.getElementById('overlay-bienvenida').classList.add('oculto');
-                iniciarMusica();
-            });
-
-            document.getElementById('btn-musica').addEventListener('click', () => {
-                if (musicaActiva) {
-                    pausarMusica();
-                } else {
+                document.getElementById('btn-entrar').addEventListener('click', () => {
+                    document.getElementById('overlay-bienvenida').classList.add('oculto');
                     iniciarMusica();
-                }
-            });
+                });
+
+                document.getElementById('btn-musica').addEventListener('click', () => {
+                    if (musicaActiva) {
+                        pausarMusica();
+                    } else {
+                        iniciarMusica();
+                    }
+                });
 
             // 3. GOOGLE CALENDAR
             const tituloCal = encodeURIComponent('Velada Fin de Año - JINZ Nº 39');
