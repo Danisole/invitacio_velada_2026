@@ -12,7 +12,8 @@
     <meta property="og:title" content="Velada 2026 - Nivel Inicial">
     <meta property="og:description" content="Tocá para abrir tu invitación interactiva y confirmar asistencia.">
     <meta property="og:image" content="https://invitaciovelada2026.vercel.app/cuentos2.jpg">
-    <meta property="og:image:type" content="image/jpg">
+    <meta property="og:image:secure_url" content="https://invitaciovelada2026.vercel.app/cuentos2.jpg">
+    <meta property="og:image:type" content="image/jpeg">
 
     <!-- Bootstrap 5 & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -440,9 +441,9 @@
                             <label for="select-sede" class="form-label fw-bold">Sede</label>
                             <select id="select-sede" class="form-select rounded-3" required>
                                 <option value="" selected disabled>Elegí la sede...</option>
-                                <option value="Esc. Corrientes">Esc. Prov. Corrientes</option>
-                                <option value="Esc. J. P. Cortines">Esc. J. P. Cortines</option>
                                 <option value="Esc. F. de Villagra">Esc. F. de Villagra</option>
+                                <option value="Esc. J. P. Cortines">Esc. J. P. Cortines</option>
+                                <option value="Esc. Corrientes">Esc. Corrientes</option>
                             </select>
                         </div>
 
@@ -580,35 +581,118 @@
             actualizarContador();
 
             // 5. FORMULARIO RSVP A WHATSAPP
-            document.getElementById("form-rsvp").addEventListener("submit", (e) => {
-                e.preventDefault();
+            // Configuración interna de sedes y señoritas (los teléfonos NO se muestran en pantalla)
+const docentesPorSede = {
+    "Esc. F. de Villagra": [
+        { nombre: "Seño Mayra", telefono: "5492646785054" },
+        { nombre: "Seño Daniela", telefono: "5492645042782" },
+        { nombre: "Seño Jimena", telefono: "5492644471247" }
+    ],
+    "Esc. J. P. Cortines": [
+        { nombre: "Seño Viviana", telefono: "5492644156267" },
+        { nombre: "Seño Leonela", telefono: "5492645062187" },
+        { nombre: "Seño Graciela", telefono: "5492644801960" },
+        { nombre: "Seño Luciana", telefono: "5492644840442" }
+    ],
+    "Esc. Corrientes": [
+        { nombre: "Seño Noelia", telefono: "5492644738435" },
+        { nombre: "Seño Eugenia", telefono: "5492644812205" },
+        { nombre: "Seño Giuliana", telefono: "5492646285304" },
+        { nombre: "Seño Mariana", telefono: "5492645439718" }
+    ]
+};
 
-                const familia = document.getElementById("input-familia").value.trim();
-                const sede = selectSede.value;
-                const opcionSeno = selectSeno.options[selectSeno.selectedIndex];
-                const seno = opcionSeno ? opcionSeno.value : "";
-                const telefonoDestino = opcionSeno ? opcionSeno.dataset.telefono : "";
-                const asiste = document.getElementById("select-asiste").value;
+const selectSede = document.getElementById("select-sede");
+const selectSeno = document.getElementById("select-seno");
 
-                if (!familia || !sede || !seno || !telefonoDestino) return;
+function cargarSenosDeSede(sedeSeleccionada, senoPreseleccionada = "") {
+    selectSeno.innerHTML = "";
+    const lista = docentesPorSede[sedeSeleccionada];
 
-                let texto = `*Confirmación Velada 2026*\n`;
-                texto += `• *Familia / Alumno:* ${familia}\n`;
-                texto += `• *Sede:* ${sede}\n`;
-                texto += `• *Señorita:* ${seno}\n`;
-                texto += `• *Asistencia:* ${asiste}`;
+    if (!lista) {
+        selectSeno.disabled = true;
+        selectSeno.innerHTML = '<option value="" selected disabled>Primero elegí una sede...</option>';
+        return;
+    }
 
-                const urlWa = `https://wa.me/${telefonoDestino}?text=${encodeURIComponent(texto)}`;
+    selectSeno.disabled = false;
+    const opcionDefault = document.createElement("option");
+    opcionDefault.value = "";
+    opcionDefault.textContent = "Elegí la señorita...";
+    opcionDefault.disabled = true;
+    opcionDefault.selected = !senoPreseleccionada;
+    selectSeno.appendChild(opcionDefault);
 
-                const modalInstancia = bootstrap.Modal.getInstance(document.getElementById("modalRSVP"));
-                if (modalInstancia) {
-                    modalInstancia.hide();
-                }
-                document.getElementById("alerta-confirmado").classList.remove("d-none");
+    lista.forEach((docente) => {
+        const option = document.createElement("option");
+        option.value = docente.nombre;
+        option.textContent = docente.nombre;
+        option.dataset.telefono = docente.telefono;
+        if (senoPreseleccionada && docente.nombre.toLowerCase() === senoPreseleccionada.toLowerCase()) {
+            option.selected = true;
+        }
+        selectSeno.appendChild(option);
+    });
+}
 
-                window.open(urlWa, "_blank", "noopener,noreferrer");
+selectSede.addEventListener("change", () => {
+    cargarSenosDeSede(selectSede.value);
+});
+
+// Opcional: precargar desde URL (?familia=...&sede=...&seno=...)
+// const params = new URLSearchParams(window.location.search);
+// const familiaParam = params.get("familia");
+const sedeParam = params.get("sede");
+const senoParam = params.get("seno");
+
+if (familiaParam) {
+    const saludoOverlay = document.getElementById("saludo-overlay");
+    const nombrePortada = document.getElementById("nombre-familia-portada");
+    const inputFamilia = document.getElementById("input-familia");
+    if (saludoOverlay) saludoOverlay.textContent = `Para: ${familiaParam}`;
+    if (nombrePortada) nombrePortada.innerHTML = `<i class="bi bi-stars me-1"></i> ${familiaParam}`;
+    if (inputFamilia) inputFamilia.value = familiaParam;
+}
+if (sedeParam && docentesPorSede[sedeParam]) {
+    selectSede.value = sedeParam;
+    cargarSenosDeSede(sedeParam, senoParam || "");
+}
+
+// Envío del formulario RSVP al WhatsApp de la señorita elegida
+document.getElementById("form-rsvp").addEventListener("submit", (e) => {
+    e.preventDefault();
+
+        const familia = document.getElementById("input-familia").value.trim();
+        const sede = selectSede.value;
+        const opcionSeno = selectSeno.options[selectSeno.selectedIndex];
+        const seno = opcionSeno ? opcionSeno.value : "";
+        const telefonoDestino = opcionSeno ? opcionSeno.dataset.telefono : "";
+        const asiste = document.getElementById("select-asiste").value;
+
+        if (!familia || !sede || !seno || !telefonoDestino) return;
+
+        let texto = `*Confirmación Velada 2026*\n`;
+        texto += `• *Familia / Alumno:* ${familia}\n`;
+        texto += `• *Sede:* ${sede}\n`;
+        texto += `• *Señorita:* ${seno}\n`;
+        texto += `• *Asistencia:* ${asiste}`;
+
+        const urlWa = `https://wa.me/${telefonoDestino}?text=${encodeURIComponent(texto)}`;
+
+        const modalEl = document.getElementById("modalRSVP");
+        const modalInstancia = modalEl ? bootstrap.Modal.getInstance(modalEl) : null;
+        if (modalInstancia) {
+            modalInstancia.hide();
+        }
+
+        const alertaConfirmado = document.getElementById("alerta-confirmado");
+        if (alertaConfirmado) {
+            alertaConfirmado.classList.remove("d-none");
+        }
+
+        window.open(urlWa, "_blank", "noopener,noreferrer");
+    });
             });
-        });
     </script>
 </body>
 </html>
